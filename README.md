@@ -14,6 +14,12 @@ npm install
 quasar dev
 ```
 
+### If quasar command not found found
+Please run
+```
+yarn global add @quasar/cli
+yarn quasar dev
+```
 
 ### Lint the files
 ```bash
