@@ -1,16 +1,25 @@
 <template>
-  <q-page class="column">
+  <q-page class="column" style="background: radial-gradient(circle, #5d7971 0%, #014a88 100%)">
     <q-card
       v-if="showTakeOrMakeQuiz"
-      class="take-make-card text-white absolute-center"
-      style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)"
+      class="column take-make-card text-white absolute-center justify-evenly"
+      style="background: radial-gradient(circle, #35a2ff 5%, #014a88 100%)"
     >
-      <q-card-section class="column">
-        <q-btn color="teal" class="q-ma-md" @click="showAddQuestionPage()">
-          <div class="text-h6 text-center q-ma-md">Add New Quiz Card</div>
-        </q-btn>
+      <q-card-section class="q-ma-none column">
+        <div class="row">
+          <q-icon name="security" size="45px" class="col-2 q-ma-md"/>
+          <p class="col-8 text-h6 q-mt-md">Test your cybersecurity knowledge and become a cyber defense expert!
+          </p>
+        </div>
         <q-btn color="teal" class="q-ma-md" @click="startQuiz()">
-          <div class="text-h6 text-center q-ma-md">Take Quiz</div>
+          <div class="text-h6 text-center q-ma-md">Start Quiz
+            <q-icon name="play_arrow" class="q-ml-md"/>
+          </div>
+        </q-btn>
+        <q-btn color="teal" class="q-ma-md" @click="showAddQuestionPage()">
+          <div class="text-h6 text-center q-ma-md">Add New Quiz Card
+            <q-icon name="post_add" class="q-ml-md"/>
+          </div>
         </q-btn>
       </q-card-section>
     </q-card>
@@ -19,18 +28,25 @@
       v-if="showMakeQuiz"
       class="make-quiz-card absolute-center"
     >
-      <q-card-section class="column">
-        <p class="text-h5">Add Question</p>
-        <q-btn flat round color="primary" icon="close" class="cursor-pointer q-ma-md absolute-top-right" @click="closeCurrentCard()">
+      <q-card-section class="column" style="background: radial-gradient(circle, #35a2ff 5%, #014a88 100%)">
+        <p class="text-h5 q-ma-none text-white text-center">Add Question</p>
+        <q-btn
+          flat
+          round
+          color="white"
+          icon="close"
+          class="cursor-pointer q-ma-sm absolute-top-right"
+          @click="closeCurrentCard()">
         </q-btn>
+      </q-card-section>
+      <q-card-section class="column">
         <q-input
           v-model="questionDescription"
           label="Description"
           outlined
           class="q-ma-md"
         />
-        <div
-          class="row"
+        <div class="row"
           v-for="option in options"
           :key="option.ID">
             <q-input
@@ -48,19 +64,27 @@
             />
         </div>
       </q-card-section>
-      <q-card-section class="row justify-between">
-        <q-btn color="teal" class="q-ma-md" @click="addOption()">
-          <div class="text-subtitle text-center">Add options</div>
+      <q-card-section class="row justify-between absolute-bottom q-mb-md">
+        <q-btn
+          class="q-ma-md"
+          @click="addOption()"
+          style="background: #014a88"
+        >
+          <div class="text-subtitle text-center text-white">Add options</div>
         </q-btn>
-        <q-btn color="teal" class="q-ma-md" @click="submitQuestion()">
-          <div class="text-subtitle text-center">Submit Question</div>
+        <q-btn
+          class="q-ma-md"
+          @click="submitQuestion()"
+          style="background: #014a88"
+        >
+          <div class="text-subtitle text-center text-white">Submit Question</div>
         </q-btn>
       </q-card-section>
-      <p class="q-ml-md">Total number of questions in the repository: {{ totalNoOfQuestionsInRepo }}</p>
+      <p class="q-ml-md fixed-bottom">Total number of questions in the repository: {{ totalNoOfQuestionsInRepo }}</p>
     </q-card>
 
     <q-card
-      class="points-card"
+      class="points-card shadow-24 absolute-top-right q-ma-lg bg-blue-7 text-white"
       v-if="showTakeQuiz"
     >
       <q-card-section class="column">
@@ -73,14 +97,21 @@
 
     <q-card
       v-if="showTakeQuiz"
-      class="take-quiz-card absolute-center"
+      class="take-quiz-card absolute-center shadow-24"
     >
-      <q-linear-progress :value="quizProgress" color="secondary"/>
+      <q-linear-progress :value="quizProgress" size="7px" rounded color="secondary"/>
       <q-card-section class="column">
-        <p class="text-h5">Question {{ currentQuestionCount }}</p>
-        <q-btn flat round color="primary" icon="close" class="cursor-pointer q-ma-md absolute-top-right" @click="closeCurrentCard()">
-        </q-btn>
-        <p>{{ currentQuestion?.description }}</p>
+        <div class="row">
+          <p class=" text-h6"><b>{{ currentQuestionCount }}</b> of <b>{{ numberOfQuestionsInQuiz }}</b></p>
+          <q-btn
+            flat
+            round
+            color="primary"
+            icon="close"
+            class=" cursor-pointer q-ma-sm absolute-top-right" @click="closeCurrentCard()">
+          </q-btn>
+        </div>
+        <p class="text-h6 q-ma-sm">{{ currentQuestion?.description }}</p>
         <div
           class="row"
           v-for="option in currentQuestion?.options"
@@ -90,12 +121,12 @@
               dense
               class="q-ma-md"
             />
-            <p class="q-ma-md">
+            <p class="q-ma-md text-subtitle1">
               {{ option.description }}
             </p>
         </div>
       </q-card-section>
-      <q-card-section class="row">
+      <q-card-section class="row absolute-bottom-left">
         <q-btn color="teal" class="q-ma-md" @click="submitAnswer()">
           <div class="text-subtitle text-center">Submit Answer</div>
         </q-btn>
@@ -104,20 +135,22 @@
 
     <q-card
       v-if="showQuizCompletedCard"
-      class="take-quiz-card absolute-center"
+      class="quiz-completed-card absolute-center shadow-24"
     >
-      <q-card-section class="column">
-        <p class="text-h5">Quiz Completed</p>
-        <q-btn flat round color="primary" icon="close" class="cursor-pointer q-ma-md absolute-top-right" @click="closeCurrentCard()">
+      <q-card-section class="column text-white text-center bg-teal-5">
+        <p class="text-h5 q-mt-sm">Quiz Completed</p>
+        <q-btn flat round color="white" icon="close" class="cursor-pointer q-ma-md absolute-top-right" @click="closeCurrentCard()">
         </q-btn>
-        <p>You scored</p>
-        <div>
-          {{ totalPointsScored }} Points out of 10
+      </q-card-section>
+      <q-card-section class="column absolute-center text-center">
+        <p class="text-h6 col">Your Score</p>
+        <div class="text-h6 col">
+          {{ totalPointsScored }} / 10
         </div>
       </q-card-section>
-      <q-card-section class="row">
-        <q-btn color="teal" class="q-ma-md" @click="startQuiz()">
-          <div class="text-subtitle text-center">Play Again</div>
+      <q-card-section class="column absolute-bottom">
+        <q-btn color="teal" class="q-ma-md q-pa-md" @click="startQuiz()">
+          <div class="text-subtitle1 text-center">Play Again</div>
         </q-btn>
       </q-card-section>
     </q-card>
@@ -126,24 +159,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { api } from 'boot/axios'
 import { useQuasar } from 'quasar'
+import { Question, Option } from '../types/types'
+import api from '../api/api'
 
 defineOptions({
   name: 'IndexPage'
 })
-
-interface Option {
-  ID: number
-  description: string
-  isRightAnswer: boolean
-  isSelected?: boolean
-}
-interface Question {
-  ID: number
-  description: string
-  options: Option[]
-}
 
 const $q = useQuasar()
 const showTakeOrMakeQuiz = ref(true)
@@ -164,16 +186,15 @@ const totalPointsScored = ref(0)
 const quizProgress = ref(0)
 const currentQuestionCount = ref(1)
 const numberOfQuestionsInQuiz = ref(0)
-const BASE_URL = 'http://localhost:3000'
 
-onMounted(async () => {
-  getAllQuestions()
+onMounted(() => {
+  pullData()
 })
 
-async function getAllQuestions () {
-  await api.get(`${BASE_URL}/questions`)
+async function pullData () {
+  await api.getAllQuestions()
     .then(response => {
-      allQuestions.value = response.data.filter((question: Question) => question.options.length > 0)
+      allQuestions.value = response?.data.filter((question: Question) => question.options.length > 0)
       totalNoOfQuestionsInRepo.value = allQuestions.value.length
     })
     .catch(error => {
@@ -187,6 +208,15 @@ function showAddQuestionPage () {
 }
 
 function addOption () {
+  if (options.value.length === 4) {
+    $q.notify({
+      color: 'warning',
+      position: 'center',
+      message: 'Maximum only 4 options are allowed',
+      icon: 'warning'
+    })
+    return
+  }
   options.value.push({
     ID: options.value.length + 1,
     description: '',
@@ -211,7 +241,7 @@ async function submitQuestion () {
       message: 'Add atleast 2 options',
       icon: 'warning'
     })
-  } else if (options.value.filter(option => option.isRightAnswer).length < 1) {
+  } else if (options.value.filter((option: Option) => option.isRightAnswer).length < 1) {
     console.log('Please select atleast 1 right answer')
     $q.notify({
       color: 'warning',
@@ -220,16 +250,12 @@ async function submitQuestion () {
       icon: 'warning'
     })
   } else {
-    const newQuestion = {
+    const newQuestion: Question = {
       description: questionDescription.value,
       options: options.value
     }
     try {
-      const response = await api.post(`${BASE_URL}/questions`, newQuestion, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
+      const response = await api.postQuestion(newQuestion)
       $q.notify({
         color: 'positive',
         position: 'center',
@@ -243,7 +269,7 @@ async function submitQuestion () {
         description: '',
         isRightAnswer: false
       }]
-      getAllQuestions()
+      pullData()
     } catch (error) {
       $q.notify({
         color: 'negative',
@@ -261,10 +287,15 @@ function closeCurrentCard () {
   showTakeQuiz.value = false
   showQuizCompletedCard.value = false
   showTakeOrMakeQuiz.value = true
+  options.value = [{
+    ID: 1,
+    description: '',
+    isRightAnswer: false
+  }]
 }
 
 function startQuiz () {
-  getAllQuestions()
+  pullData()
   totalPointsScored.value = 0
   currentQuestionCount.value = 1
   showTakeOrMakeQuiz.value = false
@@ -279,7 +310,7 @@ function startQuiz () {
   quizProgress.value = 1 / numberOfQuestionsInQuiz.value
   if (questionsInQuiz.value.length > 0) {
     currentQuestion.value = questionsInQuiz.value.pop() ?? null
-    currentQuestion.value?.options.forEach(option => {
+    currentQuestion.value?.options.forEach((option: Option) => {
       option.isSelected = false
     })
   }
@@ -288,10 +319,8 @@ function startQuiz () {
 }
 
 function submitAnswer () {
-  quizProgress.value = quizProgress.value + Number((1 / numberOfQuestionsInQuiz.value).toFixed(1))
-  currentQuestionCount.value++
   if (currentQuestion.value) {
-    const selectedOptions = currentQuestion.value.options.filter(option => option.isSelected)
+    const selectedOptions = currentQuestion.value.options.filter((option:Option) => option.isSelected)
     if (selectedOptions.length === 0) {
       $q.notify({
         color: 'warning',
@@ -300,13 +329,15 @@ function submitAnswer () {
         icon: 'warning'
       })
     } else {
-      const isRightAnswer = selectedOptions.every(option => option.isRightAnswer)
+      quizProgress.value = quizProgress.value + Number((1 / numberOfQuestionsInQuiz.value).toFixed(1))
+      currentQuestionCount.value++
+      const isRightAnswer = selectedOptions.every((option:Option) => option.isRightAnswer)
       if (isRightAnswer) {
         totalPointsScored.value++
       }
       if (questionsInQuiz.value.length > 0) {
         currentQuestion.value = questionsInQuiz.value.pop() ?? null
-        currentQuestion.value?.options.forEach(option => {
+        currentQuestion.value?.options.forEach((option:Option) => {
           option.isSelected = false
         })
       } else {
@@ -326,15 +357,23 @@ function getRandomUniqueQuestions () {
 <style lang="sass" scoped>
 .take-make-card
   width: 100%
-  max-width: 500px
+  max-width: 600px
+  height: 400px
 
 .make-quiz-card
   width: 100%
-  max-width: 500px
+  max-width: 600px
+  height: 540px
 
 .take-quiz-card
   width: 100%
-  max-width: 500px
+  max-width: 600px
+  height: 520px
+
+.quiz-completed-card
+  width: 100%
+  max-width: 600px
+  height: 400px
 
 .points-card
   width: 100%
@@ -342,5 +381,5 @@ function getRandomUniqueQuestions () {
   font-size: 20px
   font-weight: bold
   text-align: center
-  padding: 20px
+  padding: 5px
 </style>
